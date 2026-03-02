@@ -1,0 +1,88 @@
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="fas fa-edit mr-2"></i>
+                    <h3 class="mb-0">Modifier la catégorie</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Loader -->
+                    <div *ngIf="loading" class="text-center py-4">
+                        <div class="spinner-border text-warning" role="status">
+                            <span class="sr-only">Chargement...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Chargement des données...</p>
+                    </div>
+
+                    <!-- Formulaire -->
+                    <form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="!loading">
+                        <!-- Champ Nom -->
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-tag mr-1"></i> Nom <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </span>
+                                </div>
+                                <input type="text"
+                                       formControlName="name"
+                                       class="form-control"
+                                       [class.is-invalid]="form.get('name')?.invalid && form.get('name')?.touched"
+                                       placeholder="ex: Électronique"
+                                       autofocus>
+                            </div>
+                            <div class="text-danger" *ngIf="form.get('name')?.errors?.['required']">
+                                <i class="fas fa-exclamation-circle mr-1"></i> Le nom est obligatoire.
+                            </div>
+                            <div class="text-danger" *ngIf="form.get('name')?.errors?.['maxlength']">
+                                <i class="fas fa-exclamation-circle mr-1"></i> Maximum 100 caractères.
+                            </div>
+                            <small class="form-text text-muted" *ngIf="!form.get('name')?.errors">
+                                Donnez un nom clair et concis.
+                            </small>
+                        </div>
+
+                        <!-- Champ Description -->
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-align-left mr-1"></i> Description
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-file-alt"></i>
+                                    </span>
+                                </div>
+                                <textarea formControlName="description"
+                                          class="form-control"
+                                          rows="4"
+                                          placeholder="Décrivez la catégorie (optionnel)"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Message d'erreur global -->
+                        <div class="alert alert-danger" *ngIf="error">
+                            <i class="fas fa-exclamation-triangle mr-2"></i> {{ error }}
+                        </div>
+
+                        <!-- Boutons d'action -->
+                        <div class="text-right">
+                            <button type="button" class="btn btn-secondary mr-2" (click)="onCancel()">
+                                <i class="fas fa-times mr-1"></i> Annuler
+                            </button>
+                            <button type="submit" class="btn btn-warning" [disabled]="form.invalid || loading">
+                                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-2"></span>
+                                <i class="fas fa-save mr-1" *ngIf="!loading"></i>
+                                {{ loading ? 'Modification...' : 'Modifier' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

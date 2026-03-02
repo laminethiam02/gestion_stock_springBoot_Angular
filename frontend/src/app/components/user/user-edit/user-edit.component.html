@@ -1,0 +1,149 @@
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="fas fa-user-edit mr-2"></i>
+                    <h3 class="mb-0">Modifier l'utilisateur</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Loader -->
+                    <div *ngIf="loading && !user.id" class="text-center py-4">
+                        <div class="spinner-border text-warning" role="status">
+                            <span class="sr-only">Chargement...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Chargement des données...</p>
+                    </div>
+
+                    <!-- Formulaire -->
+                    <form *ngIf="user.id" (ngSubmit)="onSubmit()" #userForm="ngForm">
+                        <!-- Message d'erreur global -->
+                        <div *ngIf="errorMessage" class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle mr-2"></i> {{ errorMessage }}
+                        </div>
+
+                        <!-- Champ Nom d'utilisateur -->
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-user mr-1"></i> Nom d'utilisateur <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-pencil-alt"></i>
+                                    </span>
+                                </div>
+                                <input type="text"
+                                       class="form-control"
+                                       id="username"
+                                       [(ngModel)]="user.username"
+                                       name="username"
+                                       required
+                                       #username="ngModel"
+                                       [class.is-invalid]="username.invalid && (username.dirty || username.touched)"
+                                       placeholder="ex: johndoe"
+                                       autofocus>
+                            </div>
+                            <div *ngIf="username.invalid && (username.dirty || username.touched)" class="text-danger">
+                                <div *ngIf="username.errors?.['required']">
+                                    <i class="fas fa-exclamation-circle mr-1"></i> Le nom d'utilisateur est obligatoire.
+                                </div>
+                            </div>
+                            <small class="form-text text-muted" *ngIf="!username.invalid">
+                                Choisissez un nom d'utilisateur unique.
+                            </small>
+                        </div>
+
+                        <!-- Champ Email -->
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-envelope mr-1"></i> Email <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-at"></i>
+                                    </span>
+                                </div>
+                                <input type="email"
+                                       class="form-control"
+                                       id="email"
+                                       [(ngModel)]="user.email"
+                                       name="email"
+                                       required
+                                       email
+                                       #email="ngModel"
+                                       [class.is-invalid]="email.invalid && (email.dirty || email.touched)"
+                                       placeholder="ex: john.doe@example.com">
+                            </div>
+                            <div *ngIf="email.invalid && (email.dirty || email.touched)" class="text-danger">
+                                <div *ngIf="email.errors?.['required']">
+                                    <i class="fas fa-exclamation-circle mr-1"></i> L'email est obligatoire.
+                                </div>
+                                <div *ngIf="email.errors?.['email']">
+                                    <i class="fas fa-exclamation-circle mr-1"></i> Veuillez entrer un email valide.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Champ Nom complet -->
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-id-card mr-1"></i> Nom complet
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-user-tag"></i>
+                                    </span>
+                                </div>
+                                <input type="text"
+                                       class="form-control"
+                                       id="fullName"
+                                       [(ngModel)]="user.fullName"
+                                       name="fullName"
+                                       #fullName="ngModel"
+                                       placeholder="ex: John Doe">
+                            </div>
+                        </div>
+
+                        <!-- Champ Téléphone -->
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-phone mr-1"></i> Téléphone
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-phone-alt"></i>
+                                    </span>
+                                </div>
+                                <input type="tel"
+                                       class="form-control"
+                                       id="phone"
+                                       [(ngModel)]="user.phone"
+                                       name="phone"
+                                       #phone="ngModel"
+                                       placeholder="ex: +33 6 12 34 56 78">
+                            </div>
+                        </div>
+
+                        <!-- Boutons d'action -->
+                        <div class="text-right">
+                            <button type="button" class="btn btn-secondary mr-2" (click)="onCancel()">
+                                <i class="fas fa-times mr-1"></i> Annuler
+                            </button>
+                            <button type="submit"
+                                    class="btn btn-warning"
+                                    [disabled]="userForm.invalid || loading">
+                                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-2"></span>
+                                <i class="fas fa-save mr-1" *ngIf="!loading"></i>
+                                {{ loading ? 'Modification...' : 'Modifier' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

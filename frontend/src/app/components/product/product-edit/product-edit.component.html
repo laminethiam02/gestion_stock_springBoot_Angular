@@ -1,0 +1,174 @@
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="fas fa-edit mr-2"></i>
+                    <h3 class="mb-0">Modifier le produit</h3>
+                </div>
+                <div class="card-body">
+                    <!-- Loader -->
+                    <div *ngIf="loading" class="text-center py-4">
+                        <div class="spinner-border text-warning" role="status">
+                            <span class="sr-only">Chargement...</span>
+                        </div>
+                        <p class="mt-2 text-muted">Chargement des données...</p>
+                    </div>
+
+                    <!-- Formulaire -->
+                    <form [formGroup]="form" (ngSubmit)="onSubmit()" *ngIf="!loading">
+                        <!-- Champ Nom -->
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-tag mr-1"></i> Nom <span class="text-danger">*</span>
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-box"></i>
+                                    </span>
+                                </div>
+                                <input type="text"
+                                       formControlName="name"
+                                       class="form-control"
+                                       [class.is-invalid]="form.get('name')?.invalid && form.get('name')?.touched"
+                                       placeholder="Nom du produit"
+                                       autofocus>
+                            </div>
+                            <div class="text-danger" *ngIf="form.get('name')?.errors?.['required']">
+                                <i class="fas fa-exclamation-circle mr-1"></i> Le nom est obligatoire.
+                            </div>
+                        </div>
+
+                        <!-- Champ Description -->
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-align-left mr-1"></i> Description
+                            </label>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">
+                                        <i class="fas fa-file-alt"></i>
+                                    </span>
+                                </div>
+                                <textarea formControlName="description"
+                                          class="form-control"
+                                          rows="4"
+                                          placeholder="Description du produit (optionnel)"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- Ligne : Prix et Quantité -->
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>
+                                        <i class="fas fa-euro-sign mr-1"></i> Prix <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-euro-sign"></i>
+                                            </span>
+                                        </div>
+                                        <input type="number"
+                                               formControlName="price"
+                                               class="form-control"
+                                               step="0.01"
+                                               [class.is-invalid]="form.get('price')?.invalid && form.get('price')?.touched"
+                                               placeholder="0.00">
+                                    </div>
+                                    <div class="text-danger" *ngIf="form.get('price')?.errors?.['required']">
+                                        <i class="fas fa-exclamation-circle mr-1"></i> Le prix est obligatoire.
+                                    </div>
+                                    <div class="text-danger" *ngIf="form.get('price')?.errors?.['min']">
+                                        <i class="fas fa-exclamation-circle mr-1"></i> Le prix doit être positif.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>
+                                        <i class="fas fa-cubes mr-1"></i> Quantité actuelle
+                                    </label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-cubes"></i>
+                                            </span>
+                                        </div>
+                                        <input type="number"
+                                               formControlName="quantity"
+                                               class="form-control"
+                                               readonly>
+                                    </div>
+                                    <small class="form-text text-muted">
+                                        <i class="fas fa-info-circle mr-1"></i>
+                                        La quantité se modifie via les mouvements de stock.
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ligne : Catégorie et Fournisseur -->
+                        <div class="form-row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>
+                                        <i class="fas fa-folder mr-1"></i> Catégorie
+                                    </label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-folder-open"></i>
+                                            </span>
+                                        </div>
+                                        <select formControlName="categoryId" class="form-control">
+                                            <option value="">-- Aucune --</option>
+                                            <option *ngFor="let c of categories" [value]="c.id">{{ c.name }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>
+                                        <i class="fas fa-truck mr-1"></i> Fournisseur
+                                    </label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="fas fa-building"></i>
+                                            </span>
+                                        </div>
+                                        <select formControlName="supplierId" class="form-control">
+                                            <option value="">-- Aucun --</option>
+                                            <option *ngFor="let s of suppliers" [value]="s.id">{{ s.name }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Message d'erreur global -->
+                        <div class="alert alert-danger" *ngIf="error">
+                            <i class="fas fa-exclamation-triangle mr-2"></i> {{ error }}
+                        </div>
+
+                        <!-- Boutons d'action -->
+                        <div class="text-right">
+                            <button type="button" class="btn btn-secondary mr-2" (click)="onCancel()">
+                                <i class="fas fa-times mr-1"></i> Annuler
+                            </button>
+                            <button type="submit" class="btn btn-warning" [disabled]="form.invalid || loading">
+                                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-2"></span>
+                                <i class="fas fa-save mr-1" *ngIf="!loading"></i>
+                                {{ loading ? 'Modification...' : 'Modifier' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

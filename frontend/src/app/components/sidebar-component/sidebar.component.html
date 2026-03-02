@@ -1,0 +1,58 @@
+<nav [class]="isCollapsed ? 'sidebar collapsed' : 'sidebar'" id="sidebar">
+    <div class="sidebar-header">
+        <h3>Gestion Stock</h3>
+        <button class="btn btn-sm btn-outline-secondary" (click)="toggleSidebar()">
+            <i class="fas" [class.fa-chevron-left]="!isCollapsed" [class.fa-chevron-right]="isCollapsed"></i>
+        </button>
+    </div>
+
+    <ul class="list-unstyled components">
+        <!-- Tableau de bord -->
+        <li>
+            <a routerLink="/dashboard" routerLinkActive="active">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Tableau de bord</span>
+            </a>
+        </li>
+
+        <!-- Section Gestion de stock -->
+        <li class="menu-section">
+            <span>Gestion de stock</span>
+        </li>
+
+        <li>
+            <a routerLink="/categories" routerLinkActive="active">
+                <i class="fas fa-tags"></i>
+                <span>Catégories</span>
+            </a>
+        </li>
+
+        <li>
+            <a routerLink="/suppliers" routerLinkActive="active">
+                <i class="fas fa-truck"></i>
+                <span>Fournisseurs</span>
+            </a>
+        </li>
+
+        <li>
+            <a routerLink="/products" routerLinkActive="active">
+                <i class="fas fa-box"></i>
+                <span>Produits</span>
+            </a>
+        </li>
+
+        <li>
+            <a routerLink="/stock-movements" routerLinkActive="active">
+                <i class="fas fa-exchange-alt"></i>
+                <span>Mouvements</span>
+            </a>
+        </li>
+
+        <li>
+            <a routerLink="/users" routerLinkActive="active">
+                <i class="fas fa-users"></i>
+                <span *ngIf="!isCollapsed">Utilisateurs</span>
+            </a>
+        </li>
+    </ul>
+</nav>

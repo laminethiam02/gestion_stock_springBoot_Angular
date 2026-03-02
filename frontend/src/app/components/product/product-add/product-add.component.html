@@ -1,0 +1,55 @@
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">Ajouter un produit</div>
+                <div class="card-body">
+                    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+                        <div class="form-group">
+                            <label>Nom *</label>
+                            <input type="text" formControlName="name" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label>Description</label>
+                            <textarea formControlName="description" class="form-control"></textarea>
+                        </div>
+                        <div class="form-row">
+                            <div class="col">
+                                <label>Prix *</label>
+                                <input type="number" formControlName="price" class="form-control" step="0.01">
+                            </div>
+                            <div class="col">
+                                <label>Quantité initiale</label>
+                                <input type="number" formControlName="quantity" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col">
+                                <label>Catégorie</label>
+                                <select formControlName="categoryId" class="form-control">
+                                    <option value="">-- Aucune --</option>
+                                    <option *ngFor="let c of categories" [value]="c.id">{{ c.name }}</option>
+                                </select>
+                            </div>
+                            <div class="col">
+                                <label>Fournisseur</label>
+                                <select formControlName="supplierId" class="form-control">
+                                    <option value="">-- Aucun --</option>
+                                    <option *ngFor="let s of suppliers" [value]="s.id">{{ s.name }}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="alert alert-danger mt-2" *ngIf="error">{{ error }}</div>
+                        <div class="text-right mt-3">
+                            <button type="button" class="btn btn-secondary mr-2" (click)="onCancel()">Annuler</button>
+                            <button type="submit" class="btn btn-primary" [disabled]="form.invalid || loading">
+                                <span *ngIf="loading" class="spinner-border spinner-border-sm mr-2"></span>
+                                Créer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

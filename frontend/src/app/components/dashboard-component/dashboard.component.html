@@ -1,0 +1,349 @@
+<div class="dashboard-container">
+    <!-- En-tête -->
+    <div class="dashboard-header">
+        <div class="header-content">
+            <h1 class="dashboard-title">
+                <i class="fas fa-chart-line title-icon"></i>
+                Tableau de Bord - Gestion de Stock
+            </h1>
+            <p class="dashboard-subtitle">Vue d'ensemble de votre inventaire</p>
+        </div>
+        <div class="header-actions">
+            <!-- Menu déroulant pour l'export -->
+            <div class="export-dropdown">
+                <button class="btn-export-main" [disabled]="exportLoading || loading">
+                    <i class="fas fa-download" [class.fa-spin]="exportLoading"></i>
+                    {{ exportLoading ? 'Export...' : 'Exporter Données' }}
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <div class="export-menu">
+                    <button class="export-option" (click)="exportToCSV()" [disabled]="exportLoading">
+                        <i class="fas fa-file-csv"></i>
+                        Export Complet (CSV)
+                    </button>
+                    <button class="export-option" (click)="exportSummary()" [disabled]="exportLoading">
+                        <i class="fas fa-chart-bar"></i>
+                        Résumé Statistiques
+                    </button>
+                    <button class="export-option" (click)="exportCommercialData()" [disabled]="exportLoading">
+                        <i class="fas fa-exchange-alt"></i>
+                        Mouvements de Stock
+                    </button>
+                </div>
+            </div>
+
+            <button class="btn-refresh" (click)="loadStats()" [disabled]="loading">
+                <i class="fas fa-sync-alt" [class.fa-spin]="loading"></i>
+                Actualiser
+            </button>
+        </div>
+    </div>
+
+    <!-- Indicateur de chargement export -->
+    <div class="export-overlay" *ngIf="exportLoading">
+        <div class="export-loading-content">
+            <div class="spinner"></div>
+            <p>Exportation des données en cours...</p>
+            <p class="export-subtitle">Préparation des fichiers CSV</p>
+        </div>
+    </div>
+
+    <!-- Indicateur de chargement -->
+    <div class="loading-overlay" *ngIf="loading">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <p>Chargement des données...</p>
+        </div>
+    </div>
+
+    <!-- Message d'erreur -->
+    <div class="error-alert" *ngIf="error && !loading">
+        <div class="alert-content">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>{{ error }}</span>
+            <button class="btn-retry" (click)="loadStats()">Réessayer</button>
+        </div>
+    </div>
+
+    <!-- Statistiques principales -->
+    <div class="stats-grid" *ngIf="!loading && !error">
+        <!-- Carte Catégories -->
+        <div class="stat-card card-primary">
+            <div class="card-icon">
+                <i class="fas fa-tags"></i>
+            </div>
+            <div class="card-content">
+                <div class="stat-value">{{ stats.categories }}</div>
+                <div class="stat-label">Catégories</div>
+                <div class="stat-trend">
+                    <i class="fas fa-folder"></i>
+                    Classification des produits
+                </div>
+            </div>
+        </div>
+
+        <!-- Carte Fournisseurs -->
+        <div class="stat-card card-success">
+            <div class="card-icon">
+                <i class="fas fa-truck"></i>
+            </div>
+            <div class="card-content">
+                <div class="stat-value">{{ stats.suppliers }}</div>
+                <div class="stat-label">Fournisseurs</div>
+                <div class="stat-trend">
+                    <i class="fas fa-handshake"></i>
+                    Partenaires commerciaux
+                </div>
+            </div>
+        </div>
+
+        <!-- Carte Produits -->
+        <div class="stat-card card-info">
+            <div class="card-icon">
+                <i class="fas fa-box"></i>
+            </div>
+            <div class="card-content">
+                <div class="stat-value">{{ stats.products }}</div>
+                <div class="stat-label">Produits</div>
+                <div class="stat-detail">
+                    {{ stats.outOfStockProducts }} en rupture, {{ stats.lowStockProducts }} faible stock
+                </div>
+            </div>
+        </div>
+
+        <!-- Carte Valeur du Stock -->
+        <div class="stat-card card-warning">
+            <div class="card-icon">
+                <i class="fas fa-coins"></i>
+            </div>
+            <div class="card-content">
+                <div class="stat-value">{{ totalStockValueFormatted }}</div>
+                <div class="stat-label">Valeur du Stock</div>
+                <div class="stat-trend">
+                    <i class="fas fa-chart-line"></i>
+                    {{ stats.totalMovements }} mouvements
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section des graphiques -->
+    <div class="charts-section" *ngIf="!loading && !error">
+        <div class="section-title">
+            <h2><i class="fas fa-chart-bar"></i> Visualisations Graphiques</h2>
+            <button class="btn-refresh-charts" (click)="refreshCharts()">
+                <i class="fas fa-sync-alt"></i>
+                Actualiser Graphiques
+            </button>
+        </div>
+
+        <div class="charts-grid">
+            <!-- Graphique 1: État des stocks (pie) -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>État des stocks</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas #pieChart></canvas>
+                </div>
+                <div class="chart-footer">
+                    <div class="chart-stats">
+                        <div class="chart-stat">
+                            <span class="stat-label">Produits en stock:</span>
+                            <span class="stat-value">{{ stats.products - stats.outOfStockProducts - stats.lowStockProducts }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Graphique 2: Vue d'ensemble (bar) -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Vue d'ensemble</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas #barChart></canvas>
+                </div>
+            </div>
+
+            <!-- Graphique 3: Flux des mouvements (line) -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Flux des mouvements</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas #lineChart></canvas>
+                </div>
+            </div>
+
+            <!-- Graphique 4: Valeur stock vs Mouvements (doughnut) -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Valeur stock vs Mouvements</h3>
+                </div>
+                <div class="chart-container">
+                    <canvas #doughnutChart></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistiques secondaires -->
+    <div class="secondary-stats" *ngIf="!loading && !error">
+        <div class="section-title">
+            <h2><i class="fas fa-chart-pie"></i> Détails des Opérations</h2>
+        </div>
+
+        <div class="secondary-grid">
+            <!-- Catégories -->
+            <div class="category-card">
+                <div class="category-header production-header">
+                    <i class="fas fa-tags"></i>
+                    <h3>Catégories</h3>
+                </div>
+                <div class="category-stats">
+                    <div class="secondary-stat">
+                        <span class="stat-name">Nombre de catégories</span>
+                        <span class="stat-number">{{ stats.categories }}</span>
+                    </div>
+                    <div class="secondary-stat">
+                        <span class="stat-name">Produits par catégorie</span>
+                        <span class="stat-number">{{ (stats.products / (stats.categories || 1)) | number:'1.1-1' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fournisseurs -->
+            <div class="category-card">
+                <div class="category-header transformation-header">
+                    <i class="fas fa-truck"></i>
+                    <h3>Fournisseurs</h3>
+                </div>
+                <div class="category-stats">
+                    <div class="secondary-stat">
+                        <span class="stat-name">Fournisseurs actifs</span>
+                        <span class="stat-number">{{ stats.suppliers }}</span>
+                    </div>
+                    <div class="secondary-stat">
+                        <span class="stat-name">Produits par fournisseur</span>
+                        <span class="stat-number">{{ (stats.products / (stats.suppliers || 1)) | number:'1.1-1' }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Produits -->
+            <div class="category-card">
+                <div class="category-header infrastructure-header">
+                    <i class="fas fa-box"></i>
+                    <h3>Produits</h3>
+                </div>
+                <div class="category-stats">
+                    <div class="secondary-stat">
+                        <span class="stat-name">En stock</span>
+                        <span class="stat-number">{{ stats.products - stats.outOfStockProducts }}</span>
+                    </div>
+                    <div class="secondary-stat">
+                        <span class="stat-name">En rupture</span>
+                        <span class="stat-number">{{ stats.outOfStockProducts }}</span>
+                    </div>
+                    <div class="secondary-stat">
+                        <span class="stat-name">Faible stock</span>
+                        <span class="stat-number">{{ stats.lowStockProducts }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mouvements -->
+            <div class="category-card">
+                <div class="category-header commercial-header">
+                    <i class="fas fa-exchange-alt"></i>
+                    <h3>Mouvements</h3>
+                </div>
+                <div class="category-stats">
+                    <div class="secondary-stat">
+                        <span class="stat-name">Entrées</span>
+                        <span class="stat-number">{{ stats.entryMovements }}</span>
+                    </div>
+                    <div class="secondary-stat">
+                        <span class="stat-name">Sorties</span>
+                        <span class="stat-number">{{ stats.exitMovements }}</span>
+                    </div>
+                    <div class="secondary-stat highlight">
+                        <span class="stat-name">Total</span>
+                        <span class="stat-number">{{ stats.totalMovements }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Indicateur de performance -->
+    <div class="performance-indicators" *ngIf="!loading && !error">
+        <div class="performance-card">
+            <div class="performance-header">
+                <i class="fas fa-tachometer-alt"></i>
+                <h3>Indicateurs Clés de Performance</h3>
+            </div>
+            <div class="performance-grid">
+                <div class="indicator">
+                    <div class="indicator-value">{{ stats.products }}</div>
+                    <div class="indicator-label">Produits en catalogue</div>
+                    <div class="indicator-progress">
+                        <div class="progress-bar" [style.width.%]="performanceIndicators.stockSaturation"></div>
+                    </div>
+                    <div class="indicator-percentage">{{ performanceIndicators.stockSaturation }}% saturation</div>
+                </div>
+                <div class="indicator">
+                    <div class="indicator-value">{{ stats.totalMovements }}</div>
+                    <div class="indicator-label">Mouvements</div>
+                    <div class="indicator-progress">
+                        <div class="progress-bar" [style.width.%]="performanceIndicators.rotationTaux"></div>
+                    </div>
+                    <div class="indicator-percentage">{{ performanceIndicators.rotationTaux }}% rotation</div>
+                </div>
+                <div class="indicator">
+                    <div class="indicator-value">{{ performanceIndicators.avgProductValue }}</div>
+                    <div class="indicator-label">Valeur moyenne / produit</div>
+                    <div class="indicator-progress">
+                        <div class="progress-bar" style="width: 100%"></div>
+                    </div>
+                    <div class="indicator-percentage">(estimation)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tableau des mouvements récents -->
+    <div class="recent-movements" *ngIf="!loading && !error && recentMovements.length > 0">
+        <div class="section-title">
+            <h2><i class="fas fa-history"></i> Mouvements Récents</h2>
+            <a routerLink="/stock-movements" class="btn-view-all">Voir tous <i class="fas fa-arrow-right"></i></a>
+        </div>
+        <div class="table-responsive">
+            <table class="movements-table">
+                <thead>
+                <tr>
+                    <th>Produit</th>
+                    <th>Type</th>
+                    <th>Quantité</th>
+                    <th>Motif</th>
+                    <th>Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr *ngFor="let m of recentMovements">
+                    <td>{{ m.productName }}</td>
+                    <td>
+                            <span class="badge" [ngClass]="m.type === 'ENTREE' ? 'badge-success' : 'badge-danger'">
+                                {{ m.type }}
+                            </span>
+                    </td>
+                    <td>{{ m.quantity }}</td>
+                    <td>{{ m.reason }}</td>
+                    <td>{{ m.movementDate | date:'dd/MM/yyyy HH:mm' }}</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

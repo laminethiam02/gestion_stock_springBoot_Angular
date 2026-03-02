@@ -1,0 +1,33 @@
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between">
+            <h3>Mouvements de stock</h3>
+            <button class="btn btn-primary" (click)="onAdd()"><i class="fas fa-plus"></i> Nouveau mouvement</button>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-danger" *ngIf="error">{{ error }}</div>
+            <table class="table table-striped">
+                <thead><tr><th>ID</th><th>Produit</th><th>Type</th><th>Quantité</th><th>Motif</th><th>Date</th><th>Actions</th></tr></thead>
+                <tbody>
+                <tr *ngIf="loading"><td colspan="7">Chargement...</td></tr>
+                <tr *ngFor="let m of movements">
+                    <td>{{ m.id }}</td>
+                    <td>{{ m.productName }}</td>
+                    <td><span class="badge" [ngClass]="getTypeClass(m.type)">{{ m.type }}</span></td>
+                    <td>{{ m.quantity }}</td>
+                    <td>{{ m.reason }}</td>
+                    <td>{{ m.movementDate | date:'dd/MM/yyyy HH:mm' }}</td>
+                    <td>
+
+                        <button class="btn btn-danger btn-sm" (click)="onDelete(m.id!)">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </button>
+                    </td>
+                </tr>
+                <tr *ngIf="movements.length===0 && !loading"><td colspan="7">Aucun mouvement</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+

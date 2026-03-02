@@ -1,0 +1,39 @@
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between">
+            <h3>Liste des produits</h3>
+            <button class="btn btn-primary" (click)="onAdd()"><i class="fas fa-plus"></i> Ajouter un produit</button>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <input type="text" class="form-control" placeholder="Rechercher..." [(ngModel)]="searchTerm" (keyup.enter)="onSearch()">
+                </div>
+            </div>
+            <div class="alert alert-danger" *ngIf="error">{{ error }}</div>
+            <table class="table table-striped">
+                <thead><tr><th>ID</th><th>Nom</th><th>Prix</th><th>Qté</th><th>Catégorie</th><th>Fournisseur</th><th>Actions</th></tr></thead>
+                <tbody>
+                <tr *ngIf="loading"><td colspan="7">Chargement...</td></tr>
+                <tr *ngFor="let p of products">
+                    <td>{{ p.id }}</td>
+                    <td>{{ p.name }}</td>
+                    <td>{{ p.price | number }}</td>
+                    <td>{{ p.quantity }}</td>
+                    <td>{{ p.categoryName }}</td>
+                    <td>{{ p.supplierName }}</td>
+                    <td>
+                        <button class="btn btn-warning btn-sm mr-1" (click)="onEdit(p.id!)">
+                            <i class="fas fa-edit"></i> Modifier
+                        </button>
+                        <button class="btn btn-danger btn-sm" (click)="onDelete(p.id!)">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </button>
+                    </td>
+                </tr>
+                <tr *ngIf="products.length===0 && !loading"><td colspan="7">Aucun produit</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

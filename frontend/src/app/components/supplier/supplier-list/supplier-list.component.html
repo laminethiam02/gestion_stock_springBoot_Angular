@@ -1,0 +1,68 @@
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="mb-0">Liste des fournisseurs</h3>
+            <button class="btn btn-light" (click)="onAdd()">
+                <i class="fas fa-plus mr-2"></i>Ajouter un fournisseur
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <input type="text"
+                               class="form-control"
+                               placeholder="Rechercher..."
+                               [(ngModel)]="searchTerm"
+                               (keyup.enter)="onSearch()">
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-primary" (click)="onSearch()">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="alert alert-danger" *ngIf="error">{{ error }}</div>
+
+            <div class="table-responsive">
+                <table class="table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nom</th>
+                        <th>Email</th>
+                        <th>Téléphone</th>
+                        <th>Adresse</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngIf="loading">
+                        <td colspan="6" class="text-center">Chargement...</td>
+                    </tr>
+                    <tr *ngFor="let s of suppliers">
+                        <td data-label="ID">{{ s.id }}</td>
+                        <td data-label="Nom">{{ s.name }}</td>
+                        <td data-label="Email">{{ s.email }}</td>
+                        <td data-label="Téléphone">{{ s.phone }}</td>
+                        <td data-label="Adresse">{{ s.address }}</td>
+                        <td>
+                            <button class="btn btn-warning btn-sm mr-1" (click)="onEdit(s.id!)">
+                                <i class="fas fa-edit"></i> Modifier
+                            </button>
+                            <button class="btn btn-danger btn-sm" (click)="onDelete(s.id!)">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </button>
+                        </td>
+                    </tr>
+                    <tr *ngIf="suppliers.length === 0 && !loading">
+                        <td colspan="6" class="text-center">Aucun fournisseur trouvé</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

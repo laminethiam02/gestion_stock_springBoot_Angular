@@ -1,0 +1,75 @@
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Modifier le mouvement de stock</h4>
+        </div>
+        <div class="card-body">
+            <!-- Indicateur de chargement -->
+            <div *ngIf="loading" class="text-center my-4">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Chargement...</span>
+                </div>
+            </div>
+
+            <!-- Message d'erreur -->
+            <div *ngIf="error" class="alert alert-danger">
+                {{ error }}
+            </div>
+
+            <!-- Formulaire -->
+            <form *ngIf="!loading" [formGroup]="movementForm" (ngSubmit)="onSubmit()">
+                <div class="mb-3">
+                    <label for="productId" class="form-label">Produit</label>
+                    <input type="text" class="form-control" id="productId" formControlName="productId"
+                           [class.is-invalid]="movementForm.get('productId')?.invalid && movementForm.get('productId')?.touched">
+                    <div class="invalid-feedback" *ngIf="movementForm.get('productId')?.invalid && movementForm.get('productId')?.touched">
+                        Le produit est requis.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="quantity" class="form-label">Quantité</label>
+                    <input type="number" class="form-control" id="quantity" formControlName="quantity"
+                           [class.is-invalid]="movementForm.get('quantity')?.invalid && movementForm.get('quantity')?.touched">
+                    <div class="invalid-feedback" *ngIf="movementForm.get('quantity')?.invalid && movementForm.get('quantity')?.touched">
+                        La quantité doit être un nombre positif.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="type" class="form-label">Type</label>
+                    <select class="form-control" id="type" formControlName="type"
+                            [class.is-invalid]="movementForm.get('type')?.invalid && movementForm.get('type')?.touched">
+                        <option value="ENTREE">Entrée</option>
+                        <option value="SORTIE">Sortie</option>
+                    </select>
+                    <div class="invalid-feedback" *ngIf="movementForm.get('type')?.invalid && movementForm.get('type')?.touched">
+                        Le type est requis.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="movementDate" class="form-label">Date</label>
+                    <input type="date" class="form-control" id="movementDate" formControlName="movementDate"
+                           [class.is-invalid]="movementForm.get('movementDate')?.invalid && movementForm.get('movementDate')?.touched">
+                    <div class="invalid-feedback" *ngIf="movementForm.get('movementDate')?.invalid && movementForm.get('movementDate')?.touched">
+                        La date est requise.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="reason" class="form-label">Raison</label>
+                    <textarea class="form-control" id="reason" formControlName="reason" rows="3"></textarea>
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-secondary me-2" (click)="goBack()" [disabled]="submitting">Annuler</button>
+                    <button type="submit" class="btn btn-primary" [disabled]="movementForm.invalid || submitting">
+                        <span *ngIf="submitting" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+                        {{ submitting ? 'Enregistrement...' : 'Enregistrer' }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
