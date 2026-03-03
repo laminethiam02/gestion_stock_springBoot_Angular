@@ -35,15 +35,12 @@ Elle permet de gérer efficacement les entrées et sorties de stock tout en gara
 * **ORM** : Spring Data JPA (Hibernate)
 * **Base de données** : MySQL
 * **Validation** : Jakarta Validation
-* **Architecture** :
 
-  ```
-  Controller → Service → Repository → Entity
   ```
 * **Authentification** :
 
   * Token UUID (version actuelle)
-  * Évolution prévue : JWT + Spring Security
+
 
 ---
 
